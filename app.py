@@ -11,7 +11,7 @@ load_dotenv()
 
 app = FastAPI()
 
-# CORS middleware
+# CORS middleware for Flutter/frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -77,3 +77,15 @@ def complete_task(task_id: int):
     conn.commit()
     cursor.close()
     return {"message": "Task marked complete"}
+
+# Health check endpoint
+@app.get("/health")
+def health_check():
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+        cursor.close()
+        return {"status": "ok", "message": "API and Database are healthy"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
